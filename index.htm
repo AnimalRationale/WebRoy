@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>WebRoy</title>
+    <meta name="author" content="AnimalR">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+</head>
+
+<body>
+    <script>
+        var ref = new Firebase(");
+        ref.on("value", function(snapshot) {
+            console.log(snapshot.val());
+                // Read data for every device object
+                snapshot.forEach(function(childSnapshot) {
+                    var deviceID = childSnapshot.key();
+                    console.log("Device ID: " + deviceID);
+                    // childData contains actual battery data
+                    var childData = childSnapshot.val();
+                    console.log("Device name: " + childData.batteryDeviceName)
+                    console.log("Battery Level: " + childData.batteryLevel);
+                });
+            },
+                function (errorObject) {
+                    console.log("The read failed: " + errorObject.code);
+            });
+    </script>
+</body>
+</html>
