@@ -7,12 +7,13 @@
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
     <script src="js/progressbar.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
 </head>
 
 <body>
 
     <script>
-        var ref = new Firebase("");
+        var ref = new Firebase("https://firebaseio.com");
         ref.on("value", function(snapshot) {
             console.log(snapshot.val());
                 // Read data for every device object
@@ -23,6 +24,41 @@
                     var childData = childSnapshot.val();
                     console.log("Device name: " + childData.batteryDeviceName)
                     console.log("Battery Level: " + childData.batteryLevel);
+                    console.log("Eval: " + deviceID.toString());
+                    // Adding letter at div ID - Progressbar.js can't recognize elements IDs starting with numerals
+                    $('body').append('<div id="d' + deviceID + '" class="progress-bar-container"></div>');
+                    container = 'd' + deviceID;
+                    console.log("Container: " + container);
+                    var bar = new ProgressBar.Circle(eval(container), {
+                        color: '#FF8800',
+                        // This has to be the same size as the maximum width to
+                        // prevent clipping
+                        strokeWidth: 4,
+                        trailWidth: 4,
+                        easing: 'easeInOut',
+                        duration: 1600,
+                        text: {
+                            autoStyleContainer: false
+                        },
+                        from: { color: '#FF3300', width: 4 },
+                        to: { color: '#0050FF', width: 4 },
+                        // Set default step function for all animate calls
+                        step: function(state, circle) {
+                            circle.path.setAttribute('stroke', state.color);
+                            circle.path.setAttribute('stroke-width', state.width);
+
+                            var value = Math.round(circle.value() * 100);
+                            if (value === 0) {
+                                circle.setText('');
+                            } else {
+                                circle.setText(value);
+                            }
+
+                        }
+                    });
+                    bar.text.style.fontFamily = 'Helvetica, Arial, sans-serif';
+                    bar.text.style.fontSize = '3rem';
+                    bar.animate(childData.batteryLevel / 100);  // Number from 0.0 to 1.0
                 });
             },
                 function (errorObject) {
