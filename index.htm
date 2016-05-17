@@ -20,14 +20,19 @@
                 snapshot.forEach(function(childSnapshot) {
                     var deviceID = childSnapshot.key();
                     console.log("Device ID: " + deviceID);
-                    // childData contains actual battery data
+                    // childData contains battery data
                     var deviceData = childSnapshot.val();
                     console.log("Device name: " + deviceData.batteryDeviceName)
                     console.log("Battery Level: " + deviceData.batteryLevel);
                     // Adding letter to div ID - Progressbar.js can't recognize elements IDs starting with numerals
                     container = 'd' + deviceID;
                     console.log("Container: " + container);
-                    $('body').append('<div id="' + container + '" class="progress-bar-container"></div>');
+                    if ($('#' + container).length) {
+                        $('#' + container).empty();
+                        console.log("Container " + container + " exists.");
+                    } else {
+                        $('body').append('<div id="' + container + '" class="progress-bar-container"></div>');
+                    }
                     var bar = new ProgressBar.Circle(eval(container), {
                         color: '#FF8800',
                         // This has to be the same size as the maximum width to
