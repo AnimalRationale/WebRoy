@@ -9,6 +9,16 @@
 .device-name {
     font-family: Arial, Helvetica;
     font-size: 0.75rem;
+    font-weight: 600;
+    color: darkolivegreen;
+    display:table;
+    margin:0 auto;
+}
+
+.charging-status {
+    font-family: Arial, Helvetica;
+    font-size: 0.6rem;
+    font-weight: 600;
     color: darkolivegreen;
     display:table;
     margin:0 auto;
