@@ -10,16 +10,17 @@
     font-family: Arial, Helvetica;
     font-size: 0.75rem;
     font-weight: 600;
-    color: darkolivegreen;
+    color: dimgrey;
     display:table;
     margin:0 auto;
+    margin-top: 4px;
 }
 
 .charging-status {
     font-family: Arial, Helvetica;
     font-size: 0.6rem;
     font-weight: 600;
-    color: darkolivegreen;
+    color: darkgrey;
     display:table;
     margin:0 auto;
 }

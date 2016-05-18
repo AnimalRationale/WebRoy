@@ -11,68 +11,71 @@
 </head>
 
 <body>
-
     <script>
+        function drawBatteryLevelIndicator(container, batteryLevel) {
+            var bar = new ProgressBar.Circle(eval(container), {
+                color: '#FF8800',
+                // This has to be the same size as the maximum width to
+                // prevent clipping
+                strokeWidth: 4,
+                trailWidth: 4,
+                easing: 'easeInOut',
+                duration: 1600,
+                text: {
+                    autoStyleContainer: false
+                },
+                from: { color: '#FF3388', width: 4 },
+                to: { color: '#0050FF', width: 4 },
+                // Set default step function for all animate calls
+                step: function(state, circle) {
+                    circle.path.setAttribute('stroke', state.color);
+                    circle.path.setAttribute('stroke-width', state.width);
+                    var value = Math.round(circle.value() * 100);
+                    if (value === 0) {
+                        circle.setText('');
+                    } else {
+                        circle.setText(value + '%');
+                    }
+                }
+            });
+            bar.text.style.fontFamily = 'Helvetica, Arial, sans-serif';
+            bar.text.style.fontSize = '1.5rem';
+            bar.animate(batteryLevel / 100);  // Number from 0.0 to 1.0
+        }
+
         var ref = new Firebase("https://firebaseio.com");
         ref.on("value", function(snapshot) {
             console.log(snapshot.val());
-                // Read data for every device object
-                snapshot.forEach(function(childSnapshot) {
-                    var deviceID = childSnapshot.key();
-                    console.log("Device ID: " + deviceID);
-                    // childData contains battery data
-                    var deviceData = childSnapshot.val();
-                    console.log("Device name: " + deviceData.batteryDeviceName)
-                    console.log("Battery Level: " + deviceData.batteryLevel);
-                    // Adding letter to div ID - Progressbar.js can't recognize elements IDs starting with numerals
-                    container = 'd' + deviceID;
-                    console.log("Container: " + container);
-                    if ($('#' + container).length) {
-                        $('#' + container).empty();
-                        console.log("Container " + container + " exists.");
-                    } else {
-                        $('body').append('<div id="' + container + '" class="progress-bar-container"></div>');
-                    }
-                    var bar = new ProgressBar.Circle(eval(container), {
-                        color: '#FF8800',
-                        // This has to be the same size as the maximum width to
-                        // prevent clipping
-                        strokeWidth: 4,
-                        trailWidth: 4,
-                        easing: 'easeInOut',
-                        duration: 1600,
-                        text: {
-                            autoStyleContainer: false
-                        },
-                        from: { color: '#FF3388', width: 4 },
-                        to: { color: '#0050FF', width: 4 },
-                        // Set default step function for all animate calls
-                        step: function(state, circle) {
-                            circle.path.setAttribute('stroke', state.color);
-                            circle.path.setAttribute('stroke-width', state.width);
-
-                            var value = Math.round(circle.value() * 100);
-                            if (value === 0) {
-                                circle.setText('');
-                            } else {
-                                circle.setText(value + '%');
-                            }
-
-                        }
-                    });
-                    bar.text.style.fontFamily = 'Helvetica, Arial, sans-serif';
-                    bar.text.style.fontSize = '1.5rem';
-                    bar.animate(deviceData.batteryLevel / 100);  // Number from 0.0 to 1.0
-                    if (deviceData.batteryChargingStatus === 1) {
-                        chargingStatus = "Charging";
-                    } else chargingStatus = "Discharging";
-                    $('#' + container).append('<span class="device-name">' + deviceData.batteryDeviceName + '</span>');
-                    $('#' + container).append('<span class="charging-status">' + chargingStatus + '</span>');
-                });
-            },
-                function (errorObject) {
-                    console.log("The read failed: " + errorObject.code);
+            // Read data for every device object
+            snapshot.forEach(function(childSnapshot) {
+                var deviceID = childSnapshot.key();
+                console.log("Device ID: " + deviceID);
+                // childData contains battery data
+                var deviceData = childSnapshot.val();
+                console.log("Device name: " + deviceData.batteryDeviceName)
+                console.log("Battery Level: " + deviceData.batteryLevel);
+                // Adding letter to div ID - Progressbar.js can't recognize elements IDs starting with numerals
+                // (valid in HTML, not valid in CSS syntax)
+                container = 'd' + deviceID;
+                console.log("Container: " + container);
+                if ($('#' + container).length) {
+                    $('#' + container).empty();
+                    console.log("Container " + container + " exists.");
+                } else {
+                    $('body').append('<div id="' + container + '" class="progress-bar-container"></div>');
+                }
+                drawBatteryLevelIndicator(container, deviceData.batteryLevel);
+                if (deviceData.batteryChargingStatus === 1) {
+                    chargingStatus = "Charging";
+                } else chargingStatus = "Discharging";
+                $('#' + container).append('<span class="device-name">' + deviceData.batteryDeviceName + '</span>');
+                $('#' + container).append('<span class="charging-status">' + chargingStatus + '</span>');
             });
+            },
+            function (errorObject) {
+                console.log("The read failed: " + errorObject.code);
+            }
+        );
     </script>
 </body>
 </html>
