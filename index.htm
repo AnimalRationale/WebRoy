@@ -43,6 +43,12 @@
             bar.animate(batteryLevel / 100);  // Number from 0.0 to 1.0
         }
 
+        function getChargingStatus(status) {
+            if (status === 1) {
+                return 'Charging';
+            } else return 'Discharging';
+        }
+
         var ref = new Firebase("https://firebaseio.com");
         ref.on("value", function(snapshot) {
             console.log(snapshot.val());
@@ -52,7 +58,7 @@
                 console.log("Device ID: " + deviceID);
                 // childData contains battery data
                 var deviceData = childSnapshot.val();
-                console.log("Device name: " + deviceData.batteryDeviceName)
+                console.log("Device name: " + deviceData.batteryDeviceCustomName)
                 console.log("Battery Level: " + deviceData.batteryLevel);
                 // Adding letter to div ID - Progressbar.js can't recognize elements IDs starting with numerals
                 // (valid in HTML, not valid in CSS syntax)
@@ -65,11 +71,13 @@
                     $('body').append('<div id="' + container + '" class="progress-bar-container"></div>');
                 }
                 drawBatteryLevelIndicator(container, deviceData.batteryLevel);
-                if (deviceData.batteryChargingStatus === 1) {
-                    chargingStatus = "Charging";
-                } else chargingStatus = "Discharging";
-                $('#' + container).append('<span class="device-name">' + deviceData.batteryDeviceName + '</span>');
-                $('#' + container).append('<span class="charging-status">' + chargingStatus + '</span>');
+                console.log("Status: " + getChargingStatus(deviceData.batteryChargingStatus) + " / " + deviceData.batteryChargingStatus );
+                $('#' + container).append('<span id="device-name-' + container + '" class="device-name" style="display: none;">'
+                    + deviceData.batteryDeviceCustomName + '</span>');
+                $('#' + container).append('<span id="charging-status-' + container + '" class="charging-status" style="display: none;">'
+                    + getChargingStatus(deviceData.batteryChargingStatus) + '</span>');
+                $('#device-name-' + container).fadeIn(1200);
+                $('#charging-status-' + container).fadeIn(1600);
             });
             },
             function (errorObject) {
