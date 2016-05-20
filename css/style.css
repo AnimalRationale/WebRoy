@@ -24,3 +24,12 @@
     display:table;
     margin:0 auto;
 }
+
+.time-of-check {
+    font-family: Arial, Helvetica;
+    font-size: 0.6rem;
+    font-weight: 400;
+    color: dimgrey;
+    display:table;
+    margin:0 auto;
+}

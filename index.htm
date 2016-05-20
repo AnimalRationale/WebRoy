@@ -12,6 +12,7 @@
 
 <body>
     <script>
+
         function drawBatteryLevelIndicator(container, batteryLevel) {
             var bar = new ProgressBar.Circle(eval(container), {
                 color: '#FF8800',
@@ -49,6 +50,30 @@
             } else return 'Discharging';
         }
 
+        function getTimeOfCheck(time) {
+            timeNow = (new Date).getTime();
+            if (time > timeNow || time <= 0) return 'Error';
+            timeOfCheck = timeNow - time;
+
+            const SECOND_IN_MILLIS = 1000;
+            const MINUTE_IN_MILLIS = 60 * SECOND_IN_MILLIS;
+            const HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;
+            const DAY_IN_MILLIS = 24 * HOUR_IN_MILLIS;
+
+            if (timeOfCheck < MINUTE_IN_MILLIS)
+                timeOfCheckText = 'Checked now';
+            else if (timeOfCheck < 60 * MINUTE_IN_MILLIS)
+                timeOfCheckText = Math.round(timeOfCheck / MINUTE_IN_MILLIS) + 'min ago';
+             else if (timeOfCheck < 24 * HOUR_IN_MILLIS)
+                timeOfCheckText = Math.round(timeOfCheck / HOUR_IN_MILLIS) + 'h ago';
+             else if (timeOfCheck < 48 * HOUR_IN_MILLIS)
+                timeOfCheckText = 'Yesterday';
+            else
+                timeOfCheckText = Math.round(timeOfCheck / DAY_IN_MILLIS + 'days ago');
+
+            return timeOfCheckText;
+        }
+
         var ref = new Firebase("https://firebaseio.com");
         ref.on("value", function(snapshot) {
             console.log(snapshot.val());
@@ -75,9 +100,12 @@
                 $('#' + container).append('<span id="device-name-' + container + '" class="device-name" style="display: none;">'
                     + deviceData.batteryDeviceCustomName + '</span>');
                 $('#' + container).append('<span id="charging-status-' + container + '" class="charging-status" style="display: none;">'
-                    + getChargingStatus(deviceData.batteryChargingStatus) + '</span>');
+                + getChargingStatus(deviceData.batteryChargingStatus) + '</span>');
+                $('#' + container).append('<span id="time-of-check-' + container + '" class="time-of-check" style="display: none;">'
+                + getTimeOfCheck(deviceData.batteryCheckTime) + '</span>');
                 $('#device-name-' + container).fadeIn(1200);
                 $('#charging-status-' + container).fadeIn(1600);
+                $('#time-of-check-' + container).fadeIn(1600);
             });
             },
             function (errorObject) {
