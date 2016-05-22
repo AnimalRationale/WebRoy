@@ -5,7 +5,7 @@
     <title>WebRoy</title>
     <meta name="author" content="AnimalR">
     <link rel="stylesheet" href="css/style.css">
-    <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.0.0/firebase.js"></script>
     <script src="js/progressbar.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
 </head>
@@ -74,12 +74,16 @@
             return timeOfCheckText;
         }
 
-        var ref = new Firebase("https://firebaseio.com");
+        // Initialize Firebase
+        var config = {
+        };
+        firebase.initializeApp(config);
+        var ref = firebase.database().ref('devices');
         ref.on("value", function(snapshot) {
             console.log(snapshot.val());
             // Read data for every device object
             snapshot.forEach(function(childSnapshot) {
-                var deviceID = childSnapshot.key();
+                var deviceID = childSnapshot.key;
                 console.log("Device ID: " + deviceID);
                 // childData contains battery data
                 var deviceData = childSnapshot.val();
